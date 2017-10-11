@@ -1,0 +1,29 @@
+{
+    "name": "codehulk/fixture",
+    "description": "A dummy composer.json file for testing the ComposerJson class.",
+    "authors": [
+        {
+            "name": "Rob Piper",
+            "email": "id+git@codehulk.co.uk"
+        }
+    ],
+    "license": "MIT",
+    "type": "library",
+    "minimum-stability": "stable",
+    "autoload": {
+        "psr-4": {
+            "Test\\Package1\\": "root1/Package1/",
+            "Test\\Package3\\": "root1/Package3/",
+            "Test\\Package66\\": "root1/NonExistentFolder/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\": "root2/"
+        }
+    },
+    "require": {
+        "php": "~7.0.0"
+    },
+    "require-dev": {}
+}
