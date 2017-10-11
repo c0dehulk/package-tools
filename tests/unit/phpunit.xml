@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ * Unit Test Configuration.
+-->
+<phpunit bootstrap="bootstrap.php"
+         backupGlobals="true"
+         failOnWarning="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutChangesToGlobalState="true">
+
+    <!-- Test Suites -->
+    <testsuites>
+        <testsuite name="Unit">
+            <directory suffix="Test.php">.</directory>
+        </testsuite>
+    </testsuites>
+
+    <!-- Code Coverage Filtering -->
+    <filter>
+        <whitelist>
+            <directory suffix=".php">../../src</directory>
+        </whitelist>
+    </filter>
+</phpunit>
