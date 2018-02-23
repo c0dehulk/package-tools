@@ -69,7 +69,7 @@ class Finder implements IteratorAggregate
             // If we found any root paths, scan them for packages.
             if ($rootPaths) {
                 $namespace = new Psr4Namespace($root, ...$rootPaths);
-                yield from $this->scanNamespace($namespace);
+                yield from $this->scanRoot($namespace);
             }
 
             // If we found any package paths, scan them.
@@ -81,6 +81,34 @@ class Finder implements IteratorAggregate
     }
 
     /**
+     * Finds all projects/libraries in a vendor root.
+     *
+     * @param NamespaceInterface $root The namespace to search.
+     *
+     * @return Generator|PackageInterface[]
+     */
+    private function scanRoot(NamespaceInterface $root): Generator
+    {
+        foreach ($root->iterateNamespaces() as $namespace) {
+
+            // If you find a project readme, this is a project. Scan it for packages and sub-packages.
+            $readMes = new \Symfony\Component\Finder\Finder();
+            $readMes->files()
+                    ->in($namespace->getPaths())
+                    ->depth(0)
+                    ->name('project.md');
+
+            if ($readMes->count()) {
+                yield from $this->scanNamespaceForPackages($namespace);
+                return;
+            }
+
+            // Otherwise, this must be a library. Scan it as a package itself.
+            yield from $this->loadPackage($namespace);
+        }
+    }
+
+    /**
      * Finds all packages in a namespace.
      *
      * @param NamespaceInterface    $root   The namespace to search.
@@ -88,7 +116,7 @@ class Finder implements IteratorAggregate
      *
      * @return Generator|PackageInterface[]
      */
-    private function scanNamespace(NamespaceInterface $root, PackageInterface $parent = null): Generator
+    private function scanNamespaceForPackages(NamespaceInterface $root, PackageInterface $parent = null): Generator
     {
         foreach ($root->iterateNamespaces() as $namespace) {
             yield from $this->loadPackage($namespace, $parent);
@@ -134,6 +162,6 @@ class Finder implements IteratorAggregate
         if (!$readMes->count()) {
             return;
         }
-        yield from $this->scanNamespace($package, $package);
+        yield from $this->scanNamespaceForPackages($package, $package);
     }
 }

@@ -288,4 +288,47 @@ class FinderTest extends TestCase
         $this->assertSame('Test\\Root1\\A', $results[0]->getId());
         $this->assertSame('Test\\Root2\\B', $results[1]->getId());
     }
+
+    /**
+     * Given a namespace with a project, the finder should correctly find all packages.
+     */
+    public function testFindWithProject() {
+        $finder = new Finder(
+            [new Psr4Namespace('Company', $this->fixturePath('/finder/one_project'))],
+            [
+                'Company',
+            ]
+        );
+
+        /** @var PackageInterface[] $results */
+        $results = iterator_to_array($finder, false);
+        $this->assertCount(3, $results);
+
+        $this->assertSame('Company\\Project\\A', $results[0]->getId());
+        $this->assertSame('Company\\Project\\A\\1', $results[1]->getId());
+        $this->assertSame('Company\\Project\\A\\2', $results[2]->getId());
+    }
+
+    /**
+     * Given a mix of projects and libraries, the finder should correctly find all packages.
+     */
+    public function testFindWithEverything() {
+        $finder = new Finder(
+            [new Psr4Namespace('Company', $this->fixturePath('/finder/all'))],
+            [
+                'Company',
+            ]
+        );
+
+        /** @var PackageInterface[] $results */
+        $results = iterator_to_array($finder, false);
+        $this->assertCount(6, $results);
+
+        $this->assertSame('Company\\Library', $results[0]->getId());
+        $this->assertSame('Company\\Library\\Sub1', $results[1]->getId());
+        $this->assertSame('Company\\Library\\Sub2', $results[2]->getId());
+        $this->assertSame('Company\\Project\\Package', $results[3]->getId());
+        $this->assertSame('Company\\Project\\Package\\Sub1', $results[4]->getId());
+        $this->assertSame('Company\\Project\\Package\\Sub2', $results[5]->getId());
+    }
 }
